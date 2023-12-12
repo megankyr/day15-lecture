@@ -20,6 +20,7 @@ public class CartService {
     @Qualifier("redis")
     private RedisTemplate<String, String> template;
 
+    // retrieves cart from redis and converts it into a List<Item> object
     public List<Item> getCart(String name) {
         List<Item> cart = new ArrayList<>();
         if (template.hasKey(name)) {
@@ -38,14 +39,18 @@ public class CartService {
         return cart;
     }
 
+    // adding items to redis hash
     public void addToCart(String name, Item item) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
         hashOps.put(name, item.getItemname(), item.getQuantity().toString());
     }
 
+    // deleting user from redis hash
     public void checkoutCart(String name) {
         HashOperations<String, String, String> hashOps = template.opsForHash();
+        // fieldKeys is a set of strings containing all the keys(fields) associated with the name
         Set<String> fieldKeys = hashOps.keys(name);
+        // the delete method expects an array of strings, so we convert the set to an array
         hashOps.delete(name, fieldKeys.toArray(new String[0]));
     }
 }

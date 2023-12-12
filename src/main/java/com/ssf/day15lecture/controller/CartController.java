@@ -37,7 +37,10 @@ public class CartController {
     }
 
     @PostMapping
+    // the @ModelAttribute is used to bind form data to the item object
     public ModelAndView postCart(@Valid @ModelAttribute Item item, BindingResult binding, HttpSession session) {
+        // creates a ModelAndView object with the view name "cart"
+        // mav allows both the view and data to be displayed in the view
         ModelAndView mav = new ModelAndView("cart");
         if (binding.hasErrors()) {
             List<Item> cart = cartService.getCart((String) session.getAttribute("name"));
@@ -48,6 +51,7 @@ public class CartController {
         String name = (String) session.getAttribute("name");
         cartService.addToCart(name, item);
         List<Item> cart = cartService.getCart(name);
+        // adds a new Item instance - used for form submissions
         mav.addObject("item", new Item());
         mav.addObject("cart", cart);
         mav.setStatus(HttpStatus.OK);
